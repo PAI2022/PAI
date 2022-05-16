@@ -14,7 +14,7 @@ export class MaineUi extends LitElement {
 
   render() {
     return html`
-<vaadin-button>
+<vaadin-button id="vaadinButton" tabindex="0">
   Button 
 </vaadin-button>
 `;
