@@ -48,10 +48,14 @@ public class HomePage extends LitTemplate {
     private DatePicker admissionDP;
     @Id("clientTF")
     private TextField clientTF;
+    @Id("addClientForm")
+    private AddClientForm addClientForm;
     @Id("addEquipmentForm")
     private AddEquipmentForm addEquipmentForm;
     @Id("addEquipmentBT")
     private Button addEquipmentBT;
+    @Id("addClientBT")
+    private Button addClientBT;
 
     private final EquipmentService equipmentService;
     private List<Equipment> equipmentList;
@@ -97,12 +101,14 @@ public class HomePage extends LitTemplate {
         nameCB.setItems(equipmentList.stream().map(Equipment::getEquipmentName).distinct().collect(Collectors.toList()));
         fixedCB.setItems("Tak", "Nie");
 
+        addClientForm.setVisible(false);
         addEquipmentForm.setVisible(false);
     }
 
     @PostConstruct
     private void init() {
         resetFiltersBT.addClickListener(buttonClickEvent -> {
+            closeClientForm();
             nameCB.setValue(null);
             pickedClient = null;
             fixedCB.setValue(null);
@@ -144,6 +150,40 @@ public class HomePage extends LitTemplate {
         addEquipmentForm.addListener(AddEquipmentForm.CloseEvent.class, e -> closeEquipmentForm());
 
         addEquipmentBT.addClickListener(event -> openEquipmentForm(new Equipment()));
+        addClientBT.addClickListener(event -> openClientForm(new Client()));
+
+        addClientForm.addListener(AddClientForm.SaveEvent.class, this::saveClient);
+        addClientForm.addListener(AddClientForm.DeleteEvent.class, this::deleteClient);
+        addClientForm.addListener(AddClientForm.CloseEvent.class, e -> closeClientForm());
+    }
+
+    private void openClientForm(Client client){
+        if(client == null){
+            closeClientForm();
+        } else {
+            addEquipmentForm.setVisible(false);
+            addClientForm.setClient(client);
+            addClientForm.setVisible(true);
+        }
+    }
+
+    private void closeClientForm(){
+        addClientForm.setVisible(false);
+        //updateGrids();
+    }
+
+    private void deleteClient(AddClientForm.DeleteEvent event){
+        clientService.deleteClient(event.getClient());
+        closeClientForm();
+        clientList = clientService.getAllClients();
+        updateGrids();
+    }
+
+    private void saveClient(AddClientForm.SaveEvent event){
+        clientService.saveClient(event.getClient());
+        closeClientForm();
+        clientList = clientService.getAllClients();
+        updateGrids();
     }
 
     private void handleClientSelect(Client value) {
@@ -152,6 +192,7 @@ public class HomePage extends LitTemplate {
             nameCB.setItems(equipmentList.stream().map(Equipment::getEquipmentName).distinct().collect(Collectors.toList()));
             refreshEquipmentList();
         } else {
+            openClientForm(value);
             pickedClient = value;
             nameCB.setItems(equipmentService.getAllEquipment().stream().filter(equipment -> Objects.equals(equipment.getClientID(), value.getClientID())).map(Equipment::getEquipmentName).distinct().collect(Collectors.toList()));
             refreshEquipmentList();

@@ -9,6 +9,7 @@ import '@vaadin/date-picker/src/vaadin-date-picker.js';
 import '@vaadin/form-layout/src/vaadin-form-layout.js';
 import '@vaadin/text-field/src/vaadin-text-field.js';
 import './add-equipment-form';
+import './add-client-form';
 
 @customElement('home-page')
 export class MainUi extends LitElement {
@@ -41,9 +42,13 @@ export class MainUi extends LitElement {
               <vaadin-button tabindex="0" id="addEquipmentBT">
                 Dodaj sprzęt
               </vaadin-button>
+              <vaadin-button tabindex="0" id="addClientBT">
+                Dodaj klienta
+              </vaadin-button>
             </vaadin-horizontal-layout>
             <vaadin-grid style="flex:2; flex-shrink: 0; flex-grow: 1; height: 100%;" id="equipmentGrid" is-attached></vaadin-grid>
           </vaadin-vertical-layout>
+          <add-client-form id="addClientForm" style="flex:1; flex-shrink: 0; flex-grow: 0.5;"></add-client-form>
           <add-equipment-form id="addEquipmentForm" style="flex:1; flex-shrink: 0; flex-grow: 0.5;"></add-equipment-form>
         </vaadin-horizontal-layout>
       </vaadin-vertical-layout>
