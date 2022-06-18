@@ -19,8 +19,6 @@ public class Equipment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int equipmentID;
     private String equipmentName;
-    @Basic(optional = false)
-    @Column(insertable = false, updatable = false)
     private LocalDateTime equipmentAdmissionDate;
     private String equipmentClientNotes;
     private Integer clientID;

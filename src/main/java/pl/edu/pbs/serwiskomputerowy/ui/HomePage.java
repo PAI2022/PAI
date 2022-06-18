@@ -32,22 +32,26 @@ import java.util.stream.Collectors;
 @JsModule("./home-page.ts")
 @Route("")
 public class HomePage extends LitTemplate {
+    @Id("equipmentGrid")
+    private Grid<Equipment> equipmentGrid;
+    @Id("clientGrid")
+    private Grid<Client> clientGrid;
     @Id("nameCB")
     private ComboBox<String> nameCB;
     @Id("fixedCB")
     private ComboBox<String> fixedCB;
     @Id("resetFiltersBT")
     private Button resetFiltersBT;
-    @Id("equipmentGrid")
-    private Grid<Equipment> equipmentGrid;
-    @Id("clientGrid")
-    private Grid<Client> clientGrid;
     @Id("issuedDP")
     private DatePicker issuedDP;
     @Id("admissionDP")
     private DatePicker admissionDP;
     @Id("clientTF")
     private TextField clientTF;
+    @Id("addEquipmentForm")
+    private AddEquipmentForm addEquipmentForm;
+    @Id("addEquipmentBT")
+    private Button addEquipmentBT;
 
     private final EquipmentService equipmentService;
     private List<Equipment> equipmentList;
@@ -92,6 +96,8 @@ public class HomePage extends LitTemplate {
 
         nameCB.setItems(equipmentList.stream().map(Equipment::getEquipmentName).distinct().collect(Collectors.toList()));
         fixedCB.setItems("Tak", "Nie");
+
+        addEquipmentForm.setVisible(false);
     }
 
     @PostConstruct
@@ -131,6 +137,13 @@ public class HomePage extends LitTemplate {
         clientTF.setValueChangeMode(ValueChangeMode.LAZY);
 
         clientGrid.asSingleSelect().addValueChangeListener(event -> handleClientSelect(event.getValue()));
+        equipmentGrid.asSingleSelect().addValueChangeListener(event -> openEquipmentForm(event.getValue()));
+
+        addEquipmentForm.addListener(AddEquipmentForm.SaveEvent.class, this::saveEquipment);
+        addEquipmentForm.addListener(AddEquipmentForm.DeleteEvent.class, this::deleteEquipment);
+        addEquipmentForm.addListener(AddEquipmentForm.CloseEvent.class, e -> closeEquipmentForm());
+
+        addEquipmentBT.addClickListener(event -> openEquipmentForm(new Equipment()));
     }
 
     private void handleClientSelect(Client value) {
@@ -143,6 +156,34 @@ public class HomePage extends LitTemplate {
             nameCB.setItems(equipmentService.getAllEquipment().stream().filter(equipment -> Objects.equals(equipment.getClientID(), value.getClientID())).map(Equipment::getEquipmentName).distinct().collect(Collectors.toList()));
             refreshEquipmentList();
         }
+    }
+
+    private void openEquipmentForm(Equipment equipment){
+        if(equipment == null){
+            closeEquipmentForm();
+        } else {
+            addEquipmentForm.setEquipment(equipment);
+            addEquipmentForm.setVisible(true);
+        }
+    }
+
+    private void closeEquipmentForm(){
+        addEquipmentForm.setVisible(false);
+        //updateEquipmentGrid();
+    }
+
+    private void saveEquipment(AddEquipmentForm.SaveEvent event){
+        equipmentService.saveEquipment(event.getEquipment());
+        closeEquipmentForm();
+        equipmentList = equipmentService.getAllEquipment();
+        updateEquipmentGrid();
+    }
+
+    private void deleteEquipment(AddEquipmentForm.DeleteEvent event){
+        equipmentService.deleteEquipment(event.getEquipment());
+        closeEquipmentForm();
+        equipmentList = equipmentService.getAllEquipment();
+        updateEquipmentGrid();
     }
 
     private void updateClientList() {

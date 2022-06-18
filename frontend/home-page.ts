@@ -3,6 +3,12 @@ import '@vaadin/vaadin-ordered-layout/src/vaadin-vertical-layout.js';
 import '@vaadin/horizontal-layout/src/vaadin-horizontal-layout.js';
 import '@vaadin/grid/src/vaadin-grid.js';
 import '@vaadin/vertical-layout/src/vaadin-vertical-layout.js';
+import '@vaadin/combo-box/src/vaadin-combo-box.js';
+import '@vaadin/button/src/vaadin-button.js';
+import '@vaadin/date-picker/src/vaadin-date-picker.js';
+import '@vaadin/form-layout/src/vaadin-form-layout.js';
+import '@vaadin/text-field/src/vaadin-text-field.js';
+import './add-equipment-form';
 
 @customElement('home-page')
 export class MainUi extends LitElement {
@@ -32,9 +38,13 @@ export class MainUi extends LitElement {
               <vaadin-button tabindex="0" id="resetFiltersBT">
                 Resetuj filtry
               </vaadin-button>
+              <vaadin-button tabindex="0" id="addEquipmentBT">
+                Dodaj sprzęt
+              </vaadin-button>
             </vaadin-horizontal-layout>
             <vaadin-grid style="flex:2; flex-shrink: 0; flex-grow: 1; height: 100%;" id="equipmentGrid" is-attached></vaadin-grid>
           </vaadin-vertical-layout>
+          <add-equipment-form id="addEquipmentForm" style="flex:1; flex-shrink: 0; flex-grow: 0.5;"></add-equipment-form>
         </vaadin-horizontal-layout>
       </vaadin-vertical-layout>
     `;
