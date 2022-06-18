@@ -45,6 +45,8 @@ public class AddEquipmentForm extends LitTemplate {
     private Button deleteEquipmentBT;
     @Id("closeFormBT")
     private Button closeFormBT;
+    @Id("issueEquipmentBT")
+    private Button issueEquipmentBT;
     @Id("equipmentRepairNotes")
     private TextArea equipmentRepairNotes;
     Binder<Equipment> binder = new BeanValidationBinder<>(Equipment.class);
@@ -58,6 +60,8 @@ public class AddEquipmentForm extends LitTemplate {
         saveEquipmentBT.addClickListener(event -> validateAndSave());
         deleteEquipmentBT.addClickListener(event -> fireEvent(new DeleteEvent(this, binder.getBean())));
         closeFormBT.addClickListener(event -> fireEvent(new CloseEvent(this)));
+        issueEquipmentBT.addClickListener(event -> fireEvent(new IssueEvent(this, binder.getBean())));
+
 
         clientID.setItems(clientService.getAllClients());
         clientID.setItemLabelGenerator(Client::getClientName);
@@ -112,6 +116,12 @@ public class AddEquipmentForm extends LitTemplate {
     public static class CloseEvent extends AddEquipmentFormEvent{
         CloseEvent(AddEquipmentForm source){
             super(source, null);
+        }
+    }
+
+    public static class IssueEvent extends AddEquipmentFormEvent{
+        IssueEvent(AddEquipmentForm source, Equipment equipment){
+            super(source, equipment);
         }
     }
 
