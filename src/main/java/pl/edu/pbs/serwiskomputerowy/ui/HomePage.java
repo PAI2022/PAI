@@ -56,6 +56,8 @@ public class HomePage extends LitTemplate {
     private Button addEquipmentBT;
     @Id("addClientBT")
     private Button addClientBT;
+    @Id("issueEquipmentForm")
+    private IssueEquipmentForm issueEquipmentForm;
 
     private final EquipmentService equipmentService;
     private List<Equipment> equipmentList;
@@ -103,12 +105,14 @@ public class HomePage extends LitTemplate {
 
         addClientForm.setVisible(false);
         addEquipmentForm.setVisible(false);
+        issueEquipmentForm.setVisible(false);
     }
 
     @PostConstruct
     private void init() {
         resetFiltersBT.addClickListener(buttonClickEvent -> {
             closeClientForm();
+            closeEquipmentForm();
             nameCB.setValue(null);
             pickedClient = null;
             fixedCB.setValue(null);
@@ -148,6 +152,10 @@ public class HomePage extends LitTemplate {
         addEquipmentForm.addListener(AddEquipmentForm.SaveEvent.class, this::saveEquipment);
         addEquipmentForm.addListener(AddEquipmentForm.DeleteEvent.class, this::deleteEquipment);
         addEquipmentForm.addListener(AddEquipmentForm.CloseEvent.class, e -> closeEquipmentForm());
+        addEquipmentForm.addListener(AddEquipmentForm.IssueEvent.class, this::openIssueEquipmentForm);
+
+        issueEquipmentForm.addListener(IssueEquipmentForm.SaveEvent.class, this::saveEquipment);
+        issueEquipmentForm.addListener(IssueEquipmentForm.CloseEvent.class, e -> closeIssueEquipmentForm());
 
         addEquipmentBT.addClickListener(event -> openEquipmentForm(new Equipment()));
         addClientBT.addClickListener(event -> openClientForm(new Client()));
@@ -167,6 +175,18 @@ public class HomePage extends LitTemplate {
         }
     }
 
+    private void openIssueEquipmentForm(AddEquipmentForm.IssueEvent event) {
+        closeEquipmentForm();
+        closeClientForm();
+        issueEquipmentForm.setEquipment(event.getEquipment());
+        issueEquipmentForm.setVisible(true);
+    }
+
+    private void closeIssueEquipmentForm(){
+        issueEquipmentForm.setVisible(false);
+        //updateGrids();
+    }
+
     private void closeClientForm(){
         addClientForm.setVisible(false);
         //updateGrids();
@@ -184,6 +204,13 @@ public class HomePage extends LitTemplate {
         closeClientForm();
         clientList = clientService.getAllClients();
         updateGrids();
+    }
+
+    private void saveEquipment(IssueEquipmentForm.SaveEvent event){
+        equipmentService.saveEquipment(event.getEquipment());
+        closeIssueEquipmentForm();
+        equipmentList = equipmentService.getAllEquipment();
+        updateEquipmentGrid();
     }
 
     private void handleClientSelect(Client value) {

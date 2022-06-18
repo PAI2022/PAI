@@ -31,6 +31,9 @@ export class AddEquipmentForm extends LitElement {
         <vaadin-button id="closeFormBT" tabindex="0">
           Anuluj
         </vaadin-button>
+        <vaadin-button id="issueEquipmentBT" tabindex="0" theme="primary">
+          Zdaj sprzęt
+        </vaadin-button>
       </vaadin-form-layout>
     `;
   }
